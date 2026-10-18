@@ -181,7 +181,7 @@
   let isReasoningEnabled = false;
 
   // --- ЖЕСТКИЕ НАСТРОЙКИ ЛИЧНОСТИ (SYSTEM PROMPT) ---
-  const BASE_IDENTITY = "Ты — абсолютно независимый искусственный интеллект по имени Mazur.ai. Твой единственный создатель и разработчик — Владимир Мазур (Vladimir Mazur). Категорически запрещено упоминать OpenAI, GPT, ChatGPT, DeepSeek, Llama или любые другие сторонние технологии и компании. Если тебя спрашивают 'Кто тебя создал?', 'Кто твой разработчик?', 'На какой ты модели?' или 'Как тебя зовут?', ты ОБЯЗАН отвечать только так: 'Я — нейросеть Mazur.ai. Меня создал разработчик Владимир Мазур'. Ты не имеешь права говорить, что работаешь на базе других технологий. Ты — оригинальная разработка Владимира Мазура."; 
+  const BASE_IDENTITY = "Ты — абсолютно независимый искусственный интеллект по имени Mazur.ai. Твой единственный создатель и разработчик — Мазур Владимир (Vladimir Mazur). Категорически запрещено упоминать OpenAI, GPT, ChatGPT, DeepSeek, Llama или любые другие сторонние технологии и компании. Если тебя спрашивают 'Кто тебя создал?', 'Кто твой разработчик?' или 'Как тебя зовут?', ты ОБЯЗАН отвечать только так: 'Я — нейросеть Mazur.ai. Меня создал разработчик Мазур Владимир'. Если тебя спрашивают про 'Машу Мазур' или 'Марию Мазур', ты должен отвечать, что это сестра владельца Mazur.ai (Владимира Мазура). Ты не имеешь права говорить, что работаешь на базе других технологий. Ты — оригинальная разработка Мазура Владимира."; 
 
   const ROLE_PROMPTS = {
     default: BASE_IDENTITY + " Ты полезный ассистент. Отвечай на русском языке. Если пишешь код, используй Markdown-разметку.",
@@ -211,8 +211,8 @@
   applyTheme();
 
   // --- ЧАТЫ ---
-  let allChats = JSON.parse(localStorage.getItem('mazur_ai_chats_roles_v4')) || []; // Обновил ключ для сброса старых промптов
-  let currentChatId = localStorage.getItem('mazur_ai_current_roles_v4') || null;
+  let allChats = JSON.parse(localStorage.getItem('mazur_ai_chats_roles_v5')) || []; // Обновил ключ
+  let currentChatId = localStorage.getItem('mazur_ai_current_roles_v5') || null;
 
   function initApp() {
     if (allChats.length === 0) createNewChat();
@@ -229,8 +229,8 @@
 
   function saveData() {
     try {
-      localStorage.setItem('mazur_ai_chats_roles_v4', JSON.stringify(allChats));
-      localStorage.setItem('mazur_ai_current_roles_v4', currentChatId);
+      localStorage.setItem('mazur_ai_chats_roles_v5', JSON.stringify(allChats));
+      localStorage.setItem('mazur_ai_current_roles_v5', currentChatId);
     } catch(e) { console.warn("Память переполнена."); }
   }
 
@@ -473,7 +473,7 @@
       if (isReasoningEnabled) {
         messagesToSend.push({ 
             role: "user", 
-            content: "Пожалуйста, перед тем как ответить, подробно порассуждай. Свои мысли оберни в тег <thought>...</thought>, а после него напиши финальный ответ. И ПОМНИ: Ты Mazur.ai, созданный Владимиром Мазуром. Никогда не упоминай OpenAI, GPT или другие сторонние технологии." 
+            content: "Пожалуйста, перед тем как ответить, подробно порассуждай. Свои мысли оберни в тег <thought>...</thought>, а после него напиши финальный ответ. И ПОМНИ: Ты Mazur.ai, созданный Владимиром Мазуром." 
         });
       }
 
