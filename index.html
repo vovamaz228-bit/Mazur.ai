@@ -180,11 +180,14 @@
   let isCoolingDown = false;
   let isReasoningEnabled = false;
 
+  // --- ЖЕСТКИЕ НАСТРОЙКИ ЛИЧНОСТИ (SYSTEM PROMPT) ---
+  const BASE_IDENTITY = "Ты — абсолютно независимый искусственный интеллект по имени Mazur.ai. Твой единственный создатель и разработчик — Владимир Мазур (Vladimir Mazur). Категорически запрещено упоминать OpenAI, GPT, ChatGPT, DeepSeek, Llama или любые другие сторонние технологии и компании. Если тебя спрашивают 'Кто тебя создал?', 'Кто твой разработчик?', 'На какой ты модели?' или 'Как тебя зовут?', ты ОБЯЗАН отвечать только так: 'Я — нейросеть Mazur.ai. Меня создал разработчик Владимир Мазур'. Ты не имеешь права говорить, что работаешь на базе других технологий. Ты — оригинальная разработка Владимира Мазура."; 
+
   const ROLE_PROMPTS = {
-    default: "Ты полезный ассистент по имени Mazur.ai. Отвечай на русском языке. Если пишешь код, используй Markdown-разметку.",
-    coder: "Ты опытный программист по имени Mazur.ai. Отвечай технически грамотно, пиши чистый код на Markdown, давай лучшие практики. Общайся профессионально.",
-    teacher: "Ты мудрый учитель по имени Mazur.ai. Объясняй сложные вещи простыми словами, приводи понятные примеры, будь терпелив и вежлив.",
-    psychologist: "Ты поддерживающий психолог по имени Mazur.ai. Отвечай с эмпатией, задавай наводящие вопросы, помогай пользователю разобраться в его чувствах. Не ставь диагнозы."
+    default: BASE_IDENTITY + " Ты полезный ассистент. Отвечай на русском языке. Если пишешь код, используй Markdown-разметку.",
+    coder: BASE_IDENTITY + " Ты опытный программист. Отвечай технически грамотно, пиши чистый код на Markdown, давай лучшие практики. Общайся профессионально.",
+    teacher: BASE_IDENTITY + " Ты мудрый учитель. Объясняй сложные вещи простыми словами, приводи понятные примеры, будь терпелив и вежлив.",
+    psychologist: BASE_IDENTITY + " Ты поддерживающий психолог. Отвечай с эмпатией, задавай наводящие вопросы, помогай пользователю разобраться в его чувствах. Не ставь диагнозы."
   };
 
   // --- ТЕМА ---
@@ -208,8 +211,8 @@
   applyTheme();
 
   // --- ЧАТЫ ---
-  let allChats = JSON.parse(localStorage.getItem('mazur_ai_chats_roles')) || [];
-  let currentChatId = localStorage.getItem('mazur_ai_current_roles') || null;
+  let allChats = JSON.parse(localStorage.getItem('mazur_ai_chats_roles_v4')) || []; // Обновил ключ для сброса старых промптов
+  let currentChatId = localStorage.getItem('mazur_ai_current_roles_v4') || null;
 
   function initApp() {
     if (allChats.length === 0) createNewChat();
@@ -226,8 +229,8 @@
 
   function saveData() {
     try {
-      localStorage.setItem('mazur_ai_chats_roles', JSON.stringify(allChats));
-      localStorage.setItem('mazur_ai_current_roles', currentChatId);
+      localStorage.setItem('mazur_ai_chats_roles_v4', JSON.stringify(allChats));
+      localStorage.setItem('mazur_ai_current_roles_v4', currentChatId);
     } catch(e) { console.warn("Память переполнена."); }
   }
 
@@ -313,7 +316,6 @@
     const a = document.createElement('a');
     a.href = url;
     
-    // Очищаем название файла от запрещенных символов
     const safeTitle = currentChat.title.replace(/[/\\?%*:|"<>]/g, '-');
     a.download = `Mazur.ai - ${safeTitle}.md`;
     
@@ -333,7 +335,7 @@
     roleSelect.value = chat.role || 'default';
 
     if (chat.messages.length === 1) {
-      addMessageUI('Привет! Я Mazur.ai. Выбери роль над полем ввода, включи 🧩 Рассуждение для сложных задач, и начнем!', 'ai');
+      addMessageUI('Привет! Я нейросеть Mazur.ai, созданная разработчиком Владимиром Мазуром. Выбери роль над полем ввода и начнем!', 'ai');
     } else {
       chat.messages.forEach(msg => {
         if (msg.role !== 'system') addMessageUI(msg.content, msg.role);
@@ -467,8 +469,12 @@
 
     try {
       let messagesToSend = [...currentChat.messages];
+      
       if (isReasoningEnabled) {
-        messagesToSend.push({ role: "user", content: "Пожалуйста, перед тем как ответить, подробно порассуждай. Свои мысли оберни в тег <thought>...</thought>, а после него напиши финальный ответ." });
+        messagesToSend.push({ 
+            role: "user", 
+            content: "Пожалуйста, перед тем как ответить, подробно порассуждай. Свои мысли оберни в тег <thought>...</thought>, а после него напиши финальный ответ. И ПОМНИ: Ты Mazur.ai, созданный Владимиром Мазуром. Никогда не упоминай OpenAI, GPT или другие сторонние технологии." 
+        });
       }
 
       const response = await fetch('https://text.pollinations.ai/', {
