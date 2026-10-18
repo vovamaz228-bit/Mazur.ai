@@ -15,17 +15,10 @@
     --ai-bg: transparent; --disabled: #4a4a4a; --hover: #2a2a2a;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-  
-  /* Фикс для мобильных экранов */
   html, body { height: 100%; width: 100%; overflow: hidden; }
   body { background: var(--bg); color: var(--text); height: 100dvh; display: flex; position: fixed; }
   
-  /* --- Сайдбар --- */
-  #sidebar {
-    width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; transition: transform 0.3s ease;
-    position: fixed; top: 0; bottom: 0; left: 0; z-index: 1000; transform: translateX(-100%);
-  }
+  #sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; transition: transform 0.3s ease; position: fixed; top: 0; bottom: 0; left: 0; z-index: 1000; transform: translateX(-100%); }
   #sidebar.open { transform: translateX(0); }
   #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
   #overlay.show { opacity: 1; pointer-events: auto; }
@@ -42,46 +35,35 @@
   .chat-item:hover .delete-chat-btn { opacity: 1; }
   .delete-chat-btn:hover { color: #ff6b6b; }
 
-  /* --- Основная область --- */
   .main-content { flex: 1; display: flex; flex-direction: column; height: 100%; width: 100%; overflow: hidden; min-width: 0; }
   header { padding: 12px 16px; background: var(--bg); border-bottom: 1px solid var(--border); font-weight: 600; font-size: 16px; flex-shrink: 0; display: flex; align-items: center; gap: 12px; }
   .menu-btn { background: transparent; border: none; color: var(--text); font-size: 20px; cursor: pointer; padding: 4px 8px; border-radius: 8px; }
   
   #chat { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 24px; -webkit-overflow-scrolling: touch; max-width: 800px; margin: 0 auto; width: 100%; }
   
-  /* Сообщения */
   .msg-wrapper { display: flex; gap: 16px; width: 100%; animation: fadeIn 0.3s ease; }
   .msg-wrapper.user { flex-direction: row-reverse; }
   .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
   .user .avatar { background: #555; color: #fff; }
   .ai .avatar { background: var(--accent); color: #fff; }
   
-  .msg-content { 
-    max-width: 85%; padding: 12px 16px; border-radius: 16px; 
-    font-size: 15px; line-height: 1.5; overflow-wrap: break-word; word-break: break-word;
-  }
+  .msg-content { max-width: 85%; padding: 12px 16px; border-radius: 16px; font-size: 15px; line-height: 1.5; overflow-wrap: break-word; word-break: break-word; }
   .user .msg-content { background: var(--user-bg); border-bottom-right-radius: 4px; }
   .ai .msg-content { background: var(--ai-bg); border-bottom-left-radius: 4px; width: 100%; }
 
-  /* Markdown */
   .msg-content p { margin-bottom: 10px; }
   .msg-content p:last-child { margin-bottom: 0; }
   .msg-content pre { background: #1e1e1e; border-radius: 8px; padding: 12px; margin: 10px 0; overflow-x: auto; border: 1px solid #333; }
   .msg-content code { font-family: 'Courier New', Courier, monospace; font-size: 14px; background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; }
   .msg-content pre code { background: transparent; padding: 0; }
 
-  /* Блок рассуждений */
   .thought-block { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; overflow: hidden; font-size: 14px; width: 100%; }
   .thought-header { padding: 10px 12px; background: rgba(255,255,255,0.02); cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); user-select: none; }
   .thought-content { padding: 0 12px; max-height: 0; overflow: hidden; transition: all 0.3s ease; color: var(--text-muted); font-style: italic; }
   .thought-content.show { max-height: 2000px; padding: 12px; border-top: 1px solid var(--border); }
 
-  /* Кнопки под сообщением */
   .msg-tools { display: flex; gap: 12px; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; flex-wrap: wrap; }
-  .tool-btn { 
-    background: transparent; border: none; color: var(--text-muted); cursor: pointer; 
-    font-size: 13px; padding: 4px 8px; border-radius: 6px; transition: 0.2s; display: flex; align-items: center; gap: 4px;
-  }
+  .tool-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 4px 8px; border-radius: 6px; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
   .tool-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
 
   .typing-dots { display: flex; gap: 4px; align-items: center; height: 20px; }
@@ -89,21 +71,15 @@
   .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
   .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
 
-  /* Панель ввода */
   .input-container { padding: 0 16px 16px; background: var(--bg); flex-shrink: 0; padding-bottom: max(16px, env(safe-area-inset-bottom)); max-width: 800px; margin: 0 auto; width: 100%; }
   .action-bar { display: flex; justify-content: flex-start; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
   
-  .action-btn { 
-    background: transparent; border: 1px solid var(--border); color: var(--text-muted); 
-    padding: 6px 12px; border-radius: 16px; font-size: 13px; cursor: pointer; 
-    display: flex; align-items: center; gap: 6px; transition: all 0.2s; user-select: none;
-  }
+  .action-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 6px 12px; border-radius: 16px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; user-select: none; }
   .action-btn.active { background: rgba(59, 130, 246, 0.15); border-color: var(--accent); color: var(--accent); }
 
   .input-box { display: flex; align-items: center; background: var(--panel); border: 1px solid var(--border); border-radius: 24px; padding: 6px 6px 6px 16px; transition: border-color 0.2s; width: 100%; }
   .input-box:focus-within { border-color: #555; }
   
-  /* min-width: 0 крайне важен, чтобы инпут не выдавливал кнопки на мобилках */
   input[type="text"] { flex: 1; min-width: 0; background: transparent; border: none; color: var(--text); font-size: 16px; outline: none; padding: 8px 0; }
   input[type="text"]:disabled { opacity: 0.5; }
   
@@ -165,15 +141,10 @@
   let isCoolingDown = false;
   let isReasoningEnabled = false;
 
-  let allChats = [];
-  try {
-    allChats = JSON.parse(localStorage.getItem('mazur_ai_chats_final')) || [];
-  } catch(e) {
-    allChats = [];
-  }
+  let allChats = JSON.parse(localStorage.getItem('mazur_ai_chats_final')) || [];
   let currentChatId = localStorage.getItem('mazur_ai_current_final') || null;
 
-  const SYSTEM_PROMPT = { role: "system", content: "Ты полезный ассистент по имени Mazur.ai. Отвечай на русском языке. Если пишешь код, используй Markdown-разметку с указанием языка (например ```javascript)." };
+  const SYSTEM_PROMPT = { role: "system", content: "Ты полезный ассистент по имени Mazur.ai. Отвечай на русском языке. Если пишешь код, используй Markdown-разметку." };
 
   // --- ГОЛОСОВОЙ ВВОД ---
   let recognition = null;
@@ -186,32 +157,61 @@
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
+    recognition.onstart = () => {
+      isRecording = true;
+      micBtn.classList.add('recording');
+    };
+
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       userInput.value += (userInput.value ? ' ' : '') + transcript;
     };
-    recognition.onend = () => { isRecording = false; micBtn.classList.remove('recording'); };
+
+    recognition.onend = () => {
+      isRecording = false;
+      micBtn.classList.remove('recording');
+    };
+
     recognition.onerror = (event) => {
-      isRecording = false; micBtn.classList.remove('recording');
-      if(event.error === 'not-allowed') alert('Разрешите доступ к микрофону.');
+      isRecording = false;
+      micBtn.classList.remove('recording');
+      console.error('Ошибка микрофона:', event.error);
+      
+      if(event.error === 'not-allowed') {
+        alert('❌ Доступ к микрофону запрещен. Разрешите его в настройках браузера.');
+      } else if(event.error === 'network') {
+        alert('❌ Ошибка сети. Голосовой ввод работает только при хорошем интернете.');
+      } else {
+        alert('❌ Ошибка микрофона: ' + event.error);
+      }
     };
 
     micBtn.addEventListener('click', () => {
-      if (isRecording) recognition.stop();
-      else { recognition.start(); isRecording = true; micBtn.classList.add('recording'); }
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        try {
+          recognition.start();
+        } catch(e) {
+          alert("Не удалось запустить микрофон. Возможно, он занят другим приложением.");
+        }
+      }
     });
   } else {
-    micBtn.style.display = 'none';
+    micBtn.addEventListener('click', () => {
+      alert("❌ Ваш браузер не поддерживает голосовой ввод. Попробуйте Chrome или Safari.");
+    });
   }
 
-  // --- ОЗВУЧКА (Исправлена для мобильных) ---
+  // --- ОЗВУЧКА ---
   let voices = [];
   function loadVoices() {
     if ('speechSynthesis' in window) {
       voices = window.speechSynthesis.getVoices();
+      console.log("Доступные голоса:", voices.length);
     }
   }
-  // Загружаем голоса при инициализации и при их обновлении
+  
   if ('speechSynthesis' in window) {
     loadVoices();
     window.speechSynthesis.onvoiceschanged = loadVoices;
@@ -220,37 +220,46 @@
   let currentlySpeakingBtn = null;
   
   function speakText(text, btnElement) {
-    if ('speechSynthesis' in window) {
-      if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-        if(currentlySpeakingBtn) currentlySpeakingBtn.textContent = '🔊 Озвучить';
-        if(currentlySpeakingBtn === btnElement) { currentlySpeakingBtn = null; return; }
-      }
-      
-      const cleanText = text.replace(/[*#_`~\[\]()]/g, '');
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = 'ru-RU';
-      
-      // Ищем русский голос
-      const ruVoice = voices.find(v => v.lang.includes('ru'));
-      if (ruVoice) utterance.voice = ruVoice;
-      
-      utterance.onend = () => {
-        btnElement.textContent = '🔊 Озвучить';
-        currentlySpeakingBtn = null;
-      };
-      utterance.onerror = (e) => {
-        console.error("Ошибка озвучки", e);
-        btnElement.textContent = '🔊 Озвучить';
-        currentlySpeakingBtn = null;
-      }
-      
-      btnElement.textContent = '⏹️ Остановить';
-      currentlySpeakingBtn = btnElement;
-      window.speechSynthesis.speak(utterance);
-    } else {
-      alert('Ваш браузер не поддерживает озвучку.');
+    if (!('speechSynthesis' in window)) {
+      alert('❌ Ваш браузер не поддерживает озвучку.');
+      return;
     }
+
+    // Если уже говорит — останавливаем
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      if(currentlySpeakingBtn) currentlySpeakingBtn.textContent = '🔊 Озвучить';
+      if(currentlySpeakingBtn === btnElement) { currentlySpeakingBtn = null; return; }
+    }
+    
+    // Очистка текста от Markdown
+    const cleanText = text.replace(/[*#_`~\[\]()]/g, '');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'ru-RU';
+    
+    // Ждем загрузки голосов, если они пусты
+    if (voices.length === 0) {
+      voices = window.speechSynthesis.getVoices();
+    }
+    
+    // Ищем русский голос
+    const ruVoice = voices.find(v => v.lang.includes('ru') || v.lang.includes('RU'));
+    if (ruVoice) utterance.voice = ruVoice;
+    
+    utterance.onend = () => {
+      btnElement.textContent = '🔊 Озвучить';
+      currentlySpeakingBtn = null;
+    };
+    utterance.onerror = (e) => {
+      console.error("Ошибка озвучки:", e);
+      btnElement.textContent = '🔊 Озвучить';
+      currentlySpeakingBtn = null;
+      alert("Не удалось озвучить текст. Возможно, на телефоне нет русского голоса (TTS).");
+    }
+    
+    btnElement.textContent = '⏹️ Остановить';
+    currentlySpeakingBtn = btnElement;
+    window.speechSynthesis.speak(utterance);
   }
 
   // --- КОПИРОВАНИЕ ---
@@ -378,7 +387,6 @@
     if (type === 'ai') {
       content.querySelectorAll('pre code').forEach((block) => hljs.highlightElement(block));
       
-      // Кнопки
       const tools = document.createElement('div');
       tools.className = 'msg-tools';
       
