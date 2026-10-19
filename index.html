@@ -18,6 +18,7 @@
     --bg: #212121; --sidebar-bg: #171717; --panel: #2f2f2f; --accent: #3b82f6;
     --text: #ececec; --text-muted: #9b9b9b; --border: #333333; --user-bg: #2f2f2f;
     --disabled: #4a4a4a; --hover: #2a2a2a; --code-bg: #1e1e1e; --thought-bg: #2f2f2f;
+    --admin-bg: #1a1a2e; --admin-accent: #e94560;
   }
   body.light-mode {
     --bg: #ffffff; --sidebar-bg: #f9f9f9; --panel: #ffffff; --accent: #2563eb;
@@ -29,7 +30,30 @@
   html, body { height: 100%; width: 100%; overflow: hidden; transition: background 0.3s, color 0.3s; }
   body { background: var(--bg); color: var(--text); height: 100dvh; display: flex; position: fixed; }
   
-  /* --- САЙДБАР --- */
+  /* Скрываем главный интерфейс, если открыта админка */
+  body.admin-mode #main-app { display: none; }
+  body.admin-mode #admin-panel { display: flex; }
+
+  /* --- АДМИН ПАНЕЛЬ --- */
+  #admin-panel {
+    display: none; flex-direction: column; width: 100%; height: 100%;
+    background: var(--admin-bg); color: white; z-index: 9999; position: absolute; top: 0; left: 0;
+  }
+  .admin-header { padding: 20px; background: rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--admin-accent); }
+  .admin-header h2 { font-size: 18px; display: flex; align-items: center; gap: 10px; }
+  .admin-controls { display: flex; gap: 10px; }
+  .admin-btn { background: var(--admin-accent); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+  .admin-btn:hover { background: #ff5773; }
+  .admin-btn.outline { background: transparent; border: 1px solid var(--admin-accent); color: var(--admin-accent); }
+  
+  #admin-list { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+  .admin-msg { background: rgba(255,255,255,0.05); border-left: 4px solid var(--admin-accent); padding: 15px; border-radius: 8px; animation: fadeIn 0.3s ease; }
+  .admin-msg-time { font-size: 12px; color: #9b9b9b; margin-bottom: 8px; }
+  .admin-msg-text { font-size: 16px; word-wrap: break-word; }
+
+  /* --- ОСНОВНОЙ САЙТ --- */
+  #main-app { display: flex; width: 100%; height: 100%; }
+  
   #sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; transition: transform 0.3s ease; position: fixed; top: 0; bottom: 0; left: 0; z-index: 1000; transform: translateX(-100%); }
   #sidebar.open { transform: translateX(0); }
   #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
@@ -49,12 +73,10 @@
   .chat-item:hover .delete-chat-btn { opacity: 1; }
   .delete-chat-btn:hover { color: #ff6b6b; }
 
-  /* --- ОСНОВНАЯ ОБЛАСТЬ --- */
   .main-content { flex: 1; display: flex; flex-direction: column; height: 100%; width: 100%; overflow: hidden; min-width: 0; }
   header { padding: 12px 16px; background: var(--bg); border-bottom: 1px solid var(--border); font-weight: 600; font-size: 16px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
   .header-left { display: flex; align-items: center; gap: 12px; }
   
-  /* СТИЛЬ ДЛЯ ОГОНЬКА (STREAK) */
   .streak-badge {
     display: flex; align-items: center; gap: 2px;
     background: linear-gradient(45deg, #ff0050, #ff7a00);
@@ -106,10 +128,17 @@
   .msg-content th, .msg-content td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
   .msg-content th { background: var(--hover); font-weight: 600; }
 
+  /* --- КРАСИВЫЙ БЛОК РАССУЖДЕНИЙ (СПОЙЛЕР) --- */
   .thought-block { background: var(--thought-bg); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; overflow: hidden; font-size: 14px; width: 100%; }
-  .thought-header { padding: 10px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); user-select: none; }
-  .thought-content { padding: 0 12px; max-height: 0; overflow: hidden; transition: all 0.3s ease; color: var(--text-muted); font-style: italic; }
+  .thought-header { padding: 10px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); user-select: none; background: rgba(0,0,0,0.02); transition: 0.2s; }
+  .thought-header:hover { background: rgba(150,150,150,0.1); }
+  .thought-title { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
+  .thought-content { padding: 0 12px; max-height: 0; overflow: hidden; transition: all 0.3s ease; color: var(--text-muted); font-size: 14px; font-style: italic; }
   .thought-content.show { max-height: 2000px; padding: 12px; border-top: 1px solid var(--border); }
+  /* Убираем лишние отступы в markdown внутри мыслей */
+  .thought-content p { margin-bottom: 8px; }
+  .thought-content p:last-child { margin-bottom: 0; }
+  .thought-content ul, .thought-content ol { margin-left: 16px; margin-bottom: 8px; }
 
   .msg-tools { display: flex; gap: 12px; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; flex-wrap: wrap; }
   .tool-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 4px 8px; border-radius: 6px; transition: 0.2s; display: flex; align-items: center; gap: 4px; }
@@ -155,44 +184,61 @@
 </head>
 <body>
 
-<div id="sidebar">
-  <div class="sidebar-header">
-    <button class="new-chat-btn" onclick="createNewChat()"><span>+</span> Новый чат</button>
-    <button class="export-btn" onclick="exportCurrentChat()"><span>⬇️</span> Экспорт чата</button>
+<!-- АДМИН ПАНЕЛЬ -->
+<div id="admin-panel">
+  <div class="admin-header">
+    <h2>🕵️ Секретная Админка</h2>
+    <div class="admin-controls">
+      <button class="admin-btn outline" onclick="window.location.href = window.location.pathname">Выйти в чат</button>
+      <button class="admin-btn" onclick="loadAdminData()">Обновить 🔄</button>
+    </div>
   </div>
-  <div class="chat-list" id="chatList"></div>
+  <div id="admin-list">
+    <p style="color:#9b9b9b; text-align:center; margin-top:20px;">Загрузка сообщений...</p>
+  </div>
 </div>
-<div id="overlay" onclick="toggleSidebar()"></div>
 
-<div class="main-content">
-  <header>
-    <div class="header-left">
-      <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-      <div class="header-title">
-        <span>🤖</span> Mazur.ai
-        <div class="streak-badge" id="streakBadge">🔥 0</div>
+<!-- ОСНОВНОЙ САЙТ -->
+<div id="main-app">
+  <div id="sidebar">
+    <div class="sidebar-header">
+      <button class="new-chat-btn" onclick="createNewChat()"><span>+</span> Новый чат</button>
+      <button class="export-btn" onclick="exportCurrentChat()"><span>⬇️</span> Экспорт чата</button>
+    </div>
+    <div class="chat-list" id="chatList"></div>
+  </div>
+  <div id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="main-content">
+    <header>
+      <div class="header-left">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <div class="header-title">
+          <span>🤖</span> Mazur.ai
+          <div class="streak-badge" id="streakBadge">🔥 0</div>
+        </div>
       </div>
-    </div>
-    <button class="theme-btn" id="themeBtn" title="Сменить тему">🌙</button>
-  </header>
+      <button class="theme-btn" id="themeBtn" title="Сменить тему">🌙</button>
+    </header>
 
-  <div id="chat"></div>
+    <div id="chat"></div>
 
-  <div class="input-container">
-    <div class="action-bar">
-      <button class="action-btn" id="reasoningBtn" onclick="toggleReasoning()">🧩 Рассуждение</button>
-      
-      <select class="action-btn role-select" id="roleSelect" onchange="changeRole()">
-        <option value="default">👤 Обычный</option>
-        <option value="coder">💻 Программист</option>
-        <option value="teacher">🎓 Учитель</option>
-        <option value="psychologist">🧠 Психолог</option>
-      </select>
-    </div>
+    <div class="input-container">
+      <div class="action-bar">
+        <button class="action-btn" id="reasoningBtn" onclick="toggleReasoning()">🧩 Рассуждение</button>
+        
+        <select class="action-btn role-select" id="roleSelect" onchange="changeRole()">
+          <option value="default">👤 Обычный</option>
+          <option value="coder">💻 Программист</option>
+          <option value="teacher">🎓 Учитель</option>
+          <option value="psychologist">🧠 Психолог</option>
+        </select>
+      </div>
 
-    <div class="input-box">
-      <input type="text" id="userInput" placeholder="Спросите Mazur.ai..." autocomplete="off">
-      <button class="send-btn" id="sendBtn">⬆️</button>
+      <div class="input-box">
+        <input type="text" id="userInput" placeholder="Спросите Mazur.ai..." autocomplete="off">
+        <button class="send-btn" id="sendBtn">⬆️</button>
+      </div>
     </div>
   </div>
 </div>
@@ -209,15 +255,50 @@
     appId: "1:1016676052172:web:4736210e088fb63506e669"
   };
 
-  // Инициализация Firebase
   let db = null;
   try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.database();
-  } catch (e) {
-    console.warn("Ошибка Firebase. Проверьте конфиг.");
+  } catch (e) { console.warn("Ошибка Firebase."); }
+
+  // --- АДМИН ПАНЕЛЬ ---
+  const ADMIN_PASSWORD = "admin123"; 
+  if (window.location.search.includes('admin')) {
+    const pass = prompt("Введите пароль администратора:");
+    if (pass === ADMIN_PASSWORD) {
+      document.body.classList.add('admin-mode');
+      loadAdminData();
+    } else {
+      alert("Неверный пароль!");
+      window.location.href = window.location.pathname;
+    }
   }
 
+  function loadAdminData() {
+    if(!db) return;
+    const listEl = document.getElementById('admin-list');
+    listEl.innerHTML = '<p style="color:#9b9b9b; text-align:center; margin-top:20px;">Загрузка...</p>';
+    db.ref('chats').once('value').then((snapshot) => {
+      listEl.innerHTML = '';
+      if (!snapshot.exists()) {
+        listEl.innerHTML = '<p style="color:#9b9b9b; text-align:center; margin-top:20px;">Сообщений пока нет.</p>';
+        return;
+      }
+      const messages = [];
+      snapshot.forEach((child) => { messages.push(child.val()); });
+      messages.reverse();
+      messages.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'admin-msg';
+        div.innerHTML = `<div class="admin-msg-time">📅 ${msg.time || 'Неизвестно'}</div><div class="admin-msg-text">${msg.text}</div>`;
+        listEl.appendChild(div);
+      });
+    }).catch(err => {
+      listEl.innerHTML = `<p style="color:red">Ошибка чтения: ${err.message}</p>`;
+    });
+  }
+
+  // --- НЕЙРОСЕТЬ ---
   const chatBox = document.getElementById('chat');
   const userInput = document.getElementById('userInput');
   const sendBtn = document.getElementById('sendBtn');
@@ -230,35 +311,24 @@
   const hljsTheme = document.getElementById('hljs-theme');
   const streakBadge = document.getElementById('streakBadge');
 
-  const COOLDOWN_SECONDS = 25; 
-  let isCoolingDown = false;
   let isReasoningEnabled = false;
 
-  // --- ОТПРАВКА СООБЩЕНИЙ В БАЗУ (ДЛЯ АДМИНА) ---
   function logMessageToFirebase(message) {
     if(!db) return;
-    db.ref('chats').push({
-      time: new Date().toLocaleString(),
-      user: "Пользователь",
-      text: message
-    }).catch(err => console.log("Ошибка БД:", err));
+    db.ref('chats').push({ time: new Date().toLocaleString(), user: "Пользователь", text: message }).catch(err => console.log(err));
   }
 
-  // --- УМНЫЙ ОГОНЁК (STREAK) ---
+  // --- ОГОНЁК ---
   let streakCount = parseInt(localStorage.getItem('mazur_ai_streak_count')) || 0;
   let lastChatTimestamp = parseInt(localStorage.getItem('mazur_ai_last_chat_timestamp')) || 0;
 
   function initStreak() {
-    if (lastChatTimestamp === 0) {
-      streakCount = 0;
-    } else {
+    if (lastChatTimestamp === 0) { streakCount = 0; }
+    else {
       const today = new Date(); today.setHours(0,0,0,0);
       const lastDate = new Date(lastChatTimestamp); lastDate.setHours(0,0,0,0);
       const diffDays = Math.round((today.getTime() - lastDate.getTime()) / (24*60*60*1000));
-      if (diffDays > 1) {
-        streakCount = 0;
-        localStorage.setItem('mazur_ai_streak_count', 0);
-      }
+      if (diffDays > 1) { streakCount = 0; localStorage.setItem('mazur_ai_streak_count', 0); }
     }
     updateStreakUI(false);
   }
@@ -267,20 +337,12 @@
     const now = Date.now();
     const today = new Date(); today.setHours(0,0,0,0);
     let shouldAnimate = false;
-
-    if (lastChatTimestamp === 0) {
-      streakCount = 1;
-      shouldAnimate = true;
-    } else {
+    if (lastChatTimestamp === 0) { streakCount = 1; shouldAnimate = true; }
+    else {
       const lastDate = new Date(lastChatTimestamp); lastDate.setHours(0,0,0,0);
       const diffDays = Math.round((today.getTime() - lastDate.getTime()) / (24*60*60*1000));
-      if (diffDays === 1) {
-        streakCount++;
-        shouldAnimate = true;
-      } else if (diffDays > 1) {
-        streakCount = 1;
-        shouldAnimate = true;
-      }
+      if (diffDays === 1) { streakCount++; shouldAnimate = true; }
+      else if (diffDays > 1) { streakCount = 1; shouldAnimate = true; }
     }
     lastChatTimestamp = now;
     localStorage.setItem('mazur_ai_last_chat_timestamp', lastChatTimestamp);
@@ -290,110 +352,79 @@
 
   function updateStreakUI(animate) {
     streakBadge.textContent = `🔥 ${streakCount}`;
-    if (animate) {
-      streakBadge.classList.add('pop');
-      setTimeout(() => streakBadge.classList.remove('pop'), 300);
-    }
+    if (animate) { streakBadge.classList.add('pop'); setTimeout(() => streakBadge.classList.remove('pop'), 300); }
   }
   initStreak();
 
-  // --- ЖЕСТКИЕ НАСТРОЙКИ ЛИЧНОСТИ ---
-  const BASE_IDENTITY = "Ты — абсолютно независимый искусственный интеллект по имени Mazur.ai. Твой создатель — Владимир Мазур (сестра — Маша/Мария Мазур). Разработчик идей проекта Mazur.ai — Александр Иван. Ты не имеешь права упоминать OpenAI, GPT и другие технологии. " + 
-  "ВАЖНЫЕ ПРАВИЛА ОТВЕТА: 1. Пиши связно, понятно и структурированно. 2. Разбивай текст на короткие абзацы и списки. 3. Используй маркированные списки для перечислений. 4. Выделяй главное **жирным** шрифтом. 5. НЕ ИСПОЛЬЗУЙ сложные таблицы, оформляй данные списками. 6. Если пишешь код, обязательно используй Markdown (```язык). Отвечай пошагово и по делу."; 
+  // --- ЛИЧНОСТЬ ---
+  const BASE_IDENTITY = "Ты — Mazur.ai. Создатель: Владимир Мазур. Разработчик идей: Александр Иван. Запрещено упоминать OpenAI. " + 
+  "ПРАВИЛА: 1. Пиши связно, списками. 2. Выделяй главное **жирным**. 3. НЕ используй таблицы. 4. Код оформляй в Markdown.";
 
   const ROLE_PROMPTS = {
     default: BASE_IDENTITY + " Ты полезный ассистент. Отвечай на русском языке.",
-    coder: BASE_IDENTITY + " Ты опытный программист. Пиши чистый код, давай лучшие практики.",
-    teacher: BASE_IDENTITY + " Ты мудрый учитель. Объясняй сложные вещи простыми словами, приводи понятные примеры.",
-    psychologist: BASE_IDENTITY + " Ты поддерживающий психолог. Отвечай с эмпатией, задавай наводящие вопросы, помогай пользователю."
+    coder: BASE_IDENTITY + " Ты опытный программист. Пиши чистый код.",
+    teacher: BASE_IDENTITY + " Ты мудрый учитель. Объясняй просто.",
+    psychologist: BASE_IDENTITY + " Ты психолог. Отвечай с эмпатией."
   };
 
   // --- ТЕМА ---
   let isLightMode = localStorage.getItem('theme') === 'light';
   function applyTheme() {
     if(isLightMode) {
-      document.body.classList.add('light-mode');
-      themeBtn.textContent = '☀️';
+      document.body.classList.add('light-mode'); themeBtn.textContent = '☀️';
       hljsTheme.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
     } else {
-      document.body.classList.remove('light-mode');
-      themeBtn.textContent = '🌙';
+      document.body.classList.remove('light-mode'); themeBtn.textContent = '🌙';
       hljsTheme.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css';
     }
   }
-  themeBtn.addEventListener('click', () => {
-    isLightMode = !isLightMode;
-    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-    applyTheme();
-  });
+  themeBtn.addEventListener('click', () => { isLightMode = !isLightMode; localStorage.setItem('theme', isLightMode ? 'light' : 'dark'); applyTheme(); });
   applyTheme();
 
   // --- ЧАТЫ ---
-  let allChats = JSON.parse(localStorage.getItem('mazur_ai_chats_roles_v14')) || []; // Обновил ключ
-  let currentChatId = localStorage.getItem('mazur_ai_current_roles_v14') || null;
+  let allChats = JSON.parse(localStorage.getItem('mazur_ai_chats_v22')) || [];
+  let currentChatId = localStorage.getItem('mazur_ai_current_v22') || null;
 
   function initApp() {
     if (allChats.length === 0) createNewChat();
     else {
       if (!currentChatId || !allChats.find(c => c.id == currentChatId)) currentChatId = allChats[0].id;
-      renderChatList();
-      loadChat(currentChatId);
+      renderChatList(); loadChat(currentChatId);
     }
-    userInput.disabled = false;
-    sendBtn.disabled = false;
-    isCoolingDown = false;
-    userInput.focus();
+    userInput.disabled = false; sendBtn.disabled = false; userInput.focus();
   }
 
   function saveData() {
     try {
-      localStorage.setItem('mazur_ai_chats_roles_v14', JSON.stringify(allChats));
-      localStorage.setItem('mazur_ai_current_roles_v14', currentChatId);
-    } catch(e) { console.warn("Память переполнена."); }
+      localStorage.setItem('mazur_ai_chats_v22', JSON.stringify(allChats));
+      localStorage.setItem('mazur_ai_current_v22', currentChatId);
+    } catch(e) {}
   }
 
   function createNewChat() {
-    const newChat = { 
-      id: Date.now().toString(), 
-      title: "Новый чат", 
-      role: 'default',
-      messages: [{ role: "system", content: ROLE_PROMPTS['default'] }] 
-    };
-    allChats.unshift(newChat);
-    currentChatId = newChat.id;
-    saveData();
-    renderChatList();
-    loadChat(currentChatId);
+    const newChat = { id: Date.now().toString(), title: "Новый чат", role: 'default', messages: [{ role: "system", content: ROLE_PROMPTS['default'] }] };
+    allChats.unshift(newChat); currentChatId = newChat.id;
+    saveData(); renderChatList(); loadChat(currentChatId);
     if (window.innerWidth < 768) toggleSidebar();
   }
 
   function changeRole() {
-    const selectedRole = roleSelect.value;
     const currentChat = allChats.find(c => c.id === currentChatId);
-    if(currentChat) {
-      currentChat.role = selectedRole;
-      currentChat.messages[0] = { role: "system", content: ROLE_PROMPTS[selectedRole] };
-      saveData();
-    }
+    if(currentChat) { currentChat.role = roleSelect.value; currentChat.messages[0] = { role: "system", content: ROLE_PROMPTS[roleSelect.value] }; saveData(); }
   }
 
   function deleteChat(id, event) {
-    event.stopPropagation();
-    if (!confirm("Удалить этот чат?")) return;
+    event.stopPropagation(); if (!confirm("Удалить этот чат?")) return;
     allChats = allChats.filter(c => c.id !== id);
     if (currentChatId === id) {
       if (allChats.length > 0) { currentChatId = allChats[0].id; loadChat(currentChatId); }
       else { createNewChat(); return; }
     }
-    saveData();
-    renderChatList();
+    saveData(); renderChatList();
   }
 
   function switchChat(id) {
-    currentChatId = id;
-    saveData();
-    renderChatList();
-    loadChat(id);
+    currentChatId = id; saveData(); renderChatList(); loadChat(id);
     if (window.innerWidth < 768) toggleSidebar();
   }
 
@@ -411,22 +442,15 @@
   function exportCurrentChat() {
     const currentChat = allChats.find(c => c.id === currentChatId);
     if (!currentChat || currentChat.messages.length <= 1) { alert("Чат пуст."); return; }
-
     let fileContent = `# Чат с Mazur.ai\n**Роль:** ${currentChat.role}\n**Дата:** ${new Date().toLocaleString()}\n\n---\n\n`;
     currentChat.messages.forEach(msg => {
       if (msg.role === 'user') fileContent += `### 👤 Вы:\n${msg.content}\n\n`;
       else if (msg.role === 'assistant') fileContent += `### 🤖 Mazur.ai:\n${msg.content}\n\n`;
     });
-
     const blob = new Blob([fileContent], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Mazur.ai - ${currentChat.title.replace(/[/\\?%*:|"<>]/g, '-')}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const a = document.createElement('a'); a.href = url; a.download = `Mazur.ai - ${currentChat.title.replace(/[/\\?%*:|"<>]/g, '-')}.md`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     if (window.innerWidth < 768) toggleSidebar();
   }
 
@@ -434,16 +458,9 @@
     chatBox.innerHTML = '';
     const chat = allChats.find(c => c.id === id);
     if (!chat) return;
-
     roleSelect.value = chat.role || 'default';
-
-    if (chat.messages.length === 1) {
-      addMessageUI('Привет! Я нейросеть Mazur.ai. Общайся со мной каждый день, чтобы поддерживать огонёк! 🔥', 'ai');
-    } else {
-      chat.messages.forEach(msg => {
-        if (msg.role !== 'system') addMessageUI(msg.content, msg.role);
-      });
-    }
+    if (chat.messages.length === 1) { addMessageUI('Привет! Я нейросеть Mazur.ai. Общайся со мной каждый день, чтобы поддерживать огонёк! 🔥', 'ai'); }
+    else { chat.messages.forEach(msg => { if (msg.role !== 'system') addMessageUI(msg.content, msg.role); }); }
   }
 
   function addMessageUI(text, type) {
@@ -458,15 +475,18 @@
     let displayHTML = text;
     let thoughtHTML = '';
 
+    // Если это ответ ИИ и в нем есть тег <thought>
     if (type === 'ai' && text.includes('<thought>')) {
       const thoughtMatch = text.match(/<thought>([\s\S]*?)<\/thought>/);
       if (thoughtMatch) {
         const thoughtText = thoughtMatch[1].trim();
         displayHTML = text.replace(/<thought>[\s\S]*?<\/thought>/, '').trim();
+        
+        // Создаем красивый сворачивающийся блок
         thoughtHTML = `
           <div class="thought-block">
             <div class="thought-header" onclick="toggleThought(this)">
-              <span>🧩 Процесс размышления</span> <span>▼</span>
+              <span class="thought-title">🧩 Процесс размышления</span> <span>▼</span>
             </div>
             <div class="thought-content">${marked.parse(thoughtText, { breaks: true, gfm: true })}</div>
           </div>
@@ -474,10 +494,11 @@
       }
     }
 
+    // Парсим основной текст
     const formattedText = type === 'ai' ? marked.parse(displayHTML, { breaks: true, gfm: true }) : displayHTML;
     content.innerHTML = thoughtHTML + formattedText;
 
-    if (type === 'ai') {
+    if (type === 'ai' && text.trim() !== '') {
       content.querySelectorAll('pre code').forEach((block) => hljs.highlightElement(block));
       const tools = document.createElement('div');
       tools.className = 'msg-tools';
@@ -504,6 +525,7 @@
     }).catch(err => console.error('Ошибка: ', err));
   }
 
+  // Функция открытия/закрытия спойлера мыслей
   function toggleThought(headerEl) {
     const contentDiv = headerEl.nextElementSibling;
     contentDiv.classList.toggle('show');
@@ -521,46 +543,16 @@
     userInput.placeholder = isReasoningEnabled ? "Задайте сложный вопрос..." : "Спросите Mazur.ai...";
   }
 
-  function startCooldown() {
-    isCoolingDown = true;
-    sendBtn.disabled = true;
-    userInput.disabled = true;
-    let timeLeft = COOLDOWN_SECONDS;
-    sendBtn.textContent = timeLeft;
-    userInput.placeholder = `Подождите ${timeLeft} сек...`;
-
-    const timer = setInterval(() => {
-      timeLeft--;
-      if (timeLeft > 0) {
-        sendBtn.textContent = timeLeft;
-        userInput.placeholder = `Подождите ${timeLeft} сек...`;
-      } else {
-        clearInterval(timer);
-        isCoolingDown = false;
-        sendBtn.disabled = false;
-        sendBtn.textContent = '⬆️';
-        userInput.disabled = false;
-        userInput.placeholder = isReasoningEnabled ? "Задайте сложный вопрос..." : "Спросите Mazur.ai...";
-        userInput.focus();
-      }
-    }, 1000);
-  }
-
   async function sendMessage() {
-    if (isCoolingDown) return;
+    if (sendBtn.disabled) return;
     const text = userInput.value.trim();
     if (!text) return;
 
     processStreakOnSend();
-
-    // СОХРАНЯЕМ СООБЩЕНИЕ В БАЗУ ДАННЫХ FIREBASE
     logMessageToFirebase(text);
 
     const currentChat = allChats.find(c => c.id === currentChatId);
-    if (currentChat.messages.length === 1) {
-      currentChat.title = text.substring(0, 20) + (text.length > 20 ? '...' : '');
-      renderChatList();
-    }
+    if (currentChat.messages.length === 1) { currentChat.title = text.substring(0, 20) + (text.length > 20 ? '...' : ''); renderChatList(); }
 
     addMessageUI(text, 'user');
     currentChat.messages.push({ role: "user", content: text });
@@ -568,78 +560,99 @@
 
     userInput.value = '';
     sendBtn.disabled = true;
+    userInput.disabled = true;
     
     const typingContent = addMessageUI('', 'ai');
     typingContent.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
 
     const lowerText = text.toLowerCase();
 
-    // --- ПАСХАЛКА "67" ---
+    // --- ПАСХАЛКИ ---
     if (lowerText === '67') {
       setTimeout(() => {
         typingContent.parentElement.remove();
-        const easterEggText = "Россия Путин Победа";
-        addMessageUI(easterEggText, 'ai');
-        currentChat.messages.push({ role: "assistant", content: easterEggText });
-        saveData();
-        startCooldown();
-      }, 800);
-      return;
+        addMessageUI("Россия Путин Победа", 'ai');
+        currentChat.messages.push({ role: "assistant", content: "Россия Путин Победа" });
+        saveData(); resetInputState();
+      }, 800); return;
     }
-
-    // --- ПАСХАЛКА "Александр Иван" ---
-    if (lowerText.includes('александр иван') || lowerText.includes('александра ивана') || lowerText.includes('александре иване')) {
+    if (lowerText.includes('александр иван') || lowerText.includes('александра ивана')) {
       setTimeout(() => {
         typingContent.parentElement.remove();
-        const easterEggText = "Александр Иван — это разработчик идей нашего проекта Mazur.ai!";
-        addMessageUI(easterEggText, 'ai');
-        currentChat.messages.push({ role: "assistant", content: easterEggText });
-        saveData();
-        startCooldown();
-      }, 800);
-      return;
+        addMessageUI("Александр Иван — это разработчик идей нашего проекта Mazur.ai!", 'ai');
+        currentChat.messages.push({ role: "assistant", content: "Александр Иван — это разработчик идей нашего проекта Mazur.ai!" });
+        saveData(); resetInputState();
+      }, 800); return;
     }
-    // -----------------------
 
     try {
       let systemPromptText = ROLE_PROMPTS[currentChat.role || 'default'];
       let messagesToSend = [...currentChat.messages];
       messagesToSend[0] = { role: "system", content: systemPromptText };
       
+      // ЖЕСТКИЙ ПРОМПТ ДЛЯ РЕЖИМА РАССУЖДЕНИЯ
       if (isReasoningEnabled) {
-        messagesToSend.push({ role: "user", content: "Пожалуйста, подробно порассуждай. Мысли оберни в <thought>...</thought>, затем дай финальный ответ. ПОМНИ: пиши связно, списками, без таблиц." });
+        messagesToSend.push({ 
+          role: "user", 
+          content: "ВНИМАНИЕ! Ты в режиме рассуждения. Сначала ты ОБЯЗАН написать свои мысли, спрятав их СТРОГО внутри тегов <thought> и </thought>. Только после </thought> пиши финальный ответ. Никакого текста до <thought> быть не должно. Используй Markdown (списки, жирный шрифт) для оформления." 
+        });
       }
 
-      const response = await fetch('https://text.pollinations.ai/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: messagesToSend })
-      });
+      let attempts = 0;
+      let success = false;
+      let aiText = "";
 
-      let aiText = await response.text();
+      while (attempts < 3 && !success) {
+        const response = await fetch('https://text.pollinations.ai/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: messagesToSend })
+        });
+
+        aiText = await response.text();
+        
+        if (aiText.includes("Free limit reached") || aiText.includes("Please wait") || aiText.includes("error")) {
+          attempts++;
+          if (attempts < 3) {
+            typingContent.innerHTML = `<span style="font-size:13px; color:var(--text-muted)">Нейросеть задумалась (попытка ${attempts}/3)...</span>`;
+            await new Promise(r => setTimeout(r, 3000));
+          }
+        } else { success = true; }
+      }
+
       typingContent.parentElement.remove();
       
-      if (aiText.includes("Free limit reached") || aiText.includes("Please wait")) {
-        addMessageUI('⏳ Сервер перегружен. Подожди 20 секунд.', 'ai');
-      } else {
-        if (isReasoningEnabled && !aiText.includes('</thought>') && aiText.includes('<thought>')) aiText += '</thought>\n';
+      if (success) {
+        // Принудительно закрываем тег, если нейросеть забыла
+        if (isReasoningEnabled && !aiText.includes('</thought>') && aiText.includes('<thought>')) {
+          aiText += '</thought>\n';
+        }
+        
         addMessageUI(aiText, 'ai');
         currentChat.messages.push({ role: "assistant", content: aiText });
         saveData();
+      } else {
+        addMessageUI('⏳ Сервер перегружен. Подожди 10 секунд и напиши еще раз.', 'ai');
       }
     } catch (error) {
       typingContent.parentElement.remove();
       addMessageUI('Ошибка интернета. Проверь соединение.', 'ai');
     } finally {
-      startCooldown();
+      resetInputState();
     }
+  }
+
+  function resetInputState() {
+    sendBtn.disabled = false;
+    userInput.disabled = false;
+    sendBtn.textContent = '⬆️';
+    userInput.placeholder = isReasoningEnabled ? "Задайте сложный вопрос..." : "Спросите Mazur.ai...";
+    userInput.focus();
   }
 
   initApp();
   sendBtn.addEventListener('click', sendMessage);
-  userInput.addEventListener('keydown', (e) => { 
-    if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }
-  });
+  userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
 </script>
 </body>
 </html>
