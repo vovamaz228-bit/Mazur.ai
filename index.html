@@ -56,36 +56,39 @@
       display: none; flex-direction: column; width: 100%; height: 100%;
       background: var(--admin-bg); color: white; z-index: 9999; position: absolute; top: 0; left: 0;
     }
-    .admin-header { padding: 15px 20px; background: rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--admin-accent); flex-wrap: wrap; gap: 10px; }
+    .admin-header { padding: 15px 20px; background: rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--admin-accent); }
     .admin-btn { background: var(--admin-accent); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
     
-    /* Вкладки админки */
     .admin-tabs { display: flex; gap: 10px; padding: 10px 20px 0; background: rgba(0,0,0,0.1); }
-    .admin-tab { padding: 10px 20px; cursor: pointer; border-radius: 8px 8px 0 0; font-weight: bold; color: #9b9b9b; transition: 0.2s; }
+    .admin-tab { padding: 10px 20px; cursor: pointer; border-radius: 8px 8px 0 0; font-weight: bold; color: #9b9b9b; }
     .admin-tab.active { background: var(--admin-bg); color: white; border-top: 2px solid var(--admin-accent); }
     
     .admin-content { display: none; flex: 1; flex-direction: column; overflow-y: auto; padding: 20px; }
     .admin-content.active { display: flex; }
 
-    /* Поиск */
     .admin-search-container { padding-bottom: 15px; }
     #admin-search, #user-search { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--admin-accent); background: #0f0f1a; color: white; font-size: 16px; outline: none; }
 
-    /* Список логов */
-    .admin-msg { background: rgba(255,255,255,0.05); border-left: 4px solid var(--admin-accent); padding: 15px; border-radius: 8px; font-size: 14px; margin-bottom: 10px; }
-    .admin-msg b { color: #ffb8b8; }
-    .admin-msg .time { font-size: 12px; color: #9b9b9b; margin-bottom: 5px; }
-
     /* Список пользователей */
-    .admin-user { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border: 1px solid #333; }
-    .admin-user-info { display: flex; flex-direction: column; gap: 5px; }
+    .admin-user-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; border: 1px solid #333; }
+    .admin-user-header { display: flex; justify-content: space-between; align-items: center; }
     .admin-user-name { font-size: 16px; font-weight: bold; }
-    .admin-user-status { font-size: 12px; color: #ff6b6b; }
-    .admin-user-actions { display: flex; gap: 8px; }
+    .status-active { color: #4caf50; font-size: 12px; }
+    .status-blocked { color: #f44336; font-size: 12px; }
+    .admin-user-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .user-action-btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
+    .btn-history { background: #3b82f6; color: white; }
     .btn-block { background: #ff9800; color: white; }
     .btn-unblock { background: #4caf50; color: white; }
     .btn-delete { background: #f44336; color: white; }
+
+    /* Логи переписки */
+    .admin-msg { background: rgba(255,255,255,0.05); border-left: 4px solid var(--admin-accent); padding: 15px; border-radius: 8px; font-size: 14px; margin-bottom: 10px; }
+    .admin-msg .time { font-size: 12px; color: #9b9b9b; margin-bottom: 5px; }
+
+    /* Экран истории пользователя */
+    #user-history-view { display: none; flex-direction: column; flex: 1; }
+    .back-btn { background: #333; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; margin-bottom: 15px; width: fit-content; }
 
     body.admin-mode #main-app { display: none; }
     body.admin-mode #admin-panel { display: flex; }
@@ -186,33 +189,40 @@
   <!-- СЕКРЕТНАЯ АДМИНКА -->
   <div id="admin-panel">
     <div class="admin-header">
-      <h2>🕵️ Панель управления</h2>
-      <div>
-        <button class="admin-btn" onclick="window.location.href = window.location.pathname">Выйти</button>
-      </div>
+      <h2>🕵️ Админ-панель</h2>
+      <button class="admin-btn" onclick="window.location.href = window.location.pathname">Выйти</button>
     </div>
     
     <div class="admin-tabs">
-      <div class="admin-tab active" id="tab-logs" onclick="switchAdminTab('logs')">Логи</div>
-      <div class="admin-tab" id="tab-users" onclick="switchAdminTab('users')">Пользователи</div>
+      <div class="admin-tab active" onclick="switchAdminTab('users')">Пользователи</div>
+      <div class="admin-tab" onclick="switchAdminTab('logs')">Все логи</div>
     </div>
 
-    <!-- Вкладка Логов -->
-    <div class="admin-content active" id="content-logs">
+    <!-- Вкладка Пользователи -->
+    <div class="admin-content active" id="content-users">
+      <div id="users-main-view">
+        <div class="admin-search-container">
+          <input type="text" id="user-search" placeholder="🔍 Введите имя пользователя..." oninput="filterAdminUsers()">
+          <button class="admin-btn" style="margin-top: 10px; width: 100%;" onclick="loadAdminUsers()">Обновить список 🔄</button>
+        </div>
+        <div id="admin-users-list"></div>
+      </div>
+
+      <!-- История конкретного пользователя -->
+      <div id="user-history-view">
+        <button class="back-btn" onclick="closeUserHistory()">← Назад к списку</button>
+        <h3 id="history-username" style="margin-bottom: 15px;">История: Имя</h3>
+        <div id="history-logs-list"></div>
+      </div>
+    </div>
+
+    <!-- Вкладка Все Логи -->
+    <div class="admin-content" id="content-logs">
       <div class="admin-search-container">
-        <input type="text" id="admin-search" placeholder="🔍 Поиск по сообщению/имени..." oninput="filterAdminLogs()">
+        <input type="text" id="admin-search" placeholder="🔍 Поиск по тексту или имени..." oninput="filterAdminLogs()">
         <button class="admin-btn" style="margin-top: 10px; width: 100%;" onclick="loadAdminLogs()">Обновить логи 🔄</button>
       </div>
       <div id="admin-list"></div>
-    </div>
-
-    <!-- Вкладка Пользователей -->
-    <div class="admin-content" id="content-users">
-      <div class="admin-search-container">
-        <input type="text" id="user-search" placeholder="🔍 Поиск по имени пользователя..." oninput="filterAdminUsers()">
-        <button class="admin-btn" style="margin-top: 10px; width: 100%;" onclick="loadAdminUsers()">Обновить юзеров 🔄</button>
-      </div>
-      <div id="admin-users-list"></div>
     </div>
   </div>
 
@@ -256,7 +266,7 @@
   </div>
 
   <script>
-    // --- СЕКРЕТНЫЙ СБРОС БЛОКИРОВКИ ---
+    // --- СБРОС БЛОКИРОВКИ ---
     if (window.location.search.includes('reset')) {
       localStorage.removeItem('mazur_device_locked');
       localStorage.removeItem('mazur_current_user');
@@ -264,7 +274,7 @@
       window.location.href = window.location.pathname; 
     }
 
-    // --- ТВОЙ КОНФИГ FIREBASE ---
+    // --- КОНФИГ FIREBASE ---
     const firebaseConfig = {
       apiKey: "AIzaSyBS7dFzmVxoNdRPHKaQybmg7mXHC3yhMKI",
       authDomain: "mazurai-c934a.firebaseapp.com",
@@ -283,6 +293,7 @@
 
     // --- УПРАВЛЕНИЕ АККАУНТОМ ---
     let currentUser = JSON.parse(localStorage.getItem('mazur_current_user')) || null;
+    let userListener = null;
 
     async function registerUser() {
       const name = document.getElementById('login-name').value.trim();
@@ -301,7 +312,7 @@
         localStorage.setItem('mazur_device_locked', 'true');
         
         alert("✅ Регистрация успешна!");
-        loginSuccess(name);
+        loginSuccess(name, pass);
       } catch (e) {
         alert("Ошибка базы данных: " + e.message);
       }
@@ -327,23 +338,22 @@
         
         const userData = snapshot.val();
 
-        // --- ПРОВЕРКА НА БЛОКИРОВКУ ---
         if (userData.blocked === true) {
-          return alert("🚫 Ваш аккаунт заблокирован администратором. Вы не можете войти.");
+          return alert("🚫 Ваш аккаунт заблокирован администратором.");
         }
 
         if (userData.password !== pass) {
           return alert("❌ Неверный пароль!");
         }
 
-        loginSuccess(name);
+        loginSuccess(name, pass);
       } catch (e) {
         alert("Ошибка базы данных: " + e.message);
       }
     }
 
-    function loginSuccess(name) {
-      currentUser = { name: name };
+    function loginSuccess(name, pass) {
+      currentUser = { name: name, pass: pass };
       localStorage.setItem('mazur_current_user', JSON.stringify(currentUser));
       localStorage.setItem('mazur_device_locked', 'true');
       
@@ -354,6 +364,43 @@
       document.getElementById('login-pass').value = '';
       
       initApp();
+      monitorUserStatus(); 
+    }
+
+    // --- СЛЕЖКА ЗА СТАТУСОМ ---
+    function monitorUserStatus() {
+      if (!currentUser) return;
+      if (userListener) db.ref('users/' + currentUser.name).off('value', userListener);
+      
+      userListener = db.ref('users/' + currentUser.name).on('value', (snapshot) => {
+        const data = snapshot.val();
+        
+        if (!data) {
+          // Удален
+          alert("Ваш аккаунт был удален администратором. Теперь вы можете создать новый.");
+          localStorage.removeItem('mazur_current_user');
+          localStorage.setItem('mazur_device_locked', 'false'); // Разрешаем регистрацию
+          forceLogout();
+        } else if (data.blocked === true) {
+          // Заблокирован
+          alert("Ваш аккаунт был заблокирован администратором.");
+          localStorage.removeItem('mazur_current_user');
+          localStorage.setItem('mazur_device_locked', 'true'); // Запрещаем регистрацию
+          forceLogout();
+        } else if (data.blocked === false) {
+          // Разблокирован
+          localStorage.setItem('mazur_device_locked', 'true'); // Оставляем запрет на регистрацию
+          checkDeviceLock();
+        }
+      });
+    }
+
+    function forceLogout() {
+      if (userListener) db.ref('users/' + currentUser.name).off('value', userListener);
+      currentUser = null;
+      document.getElementById('main-app').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      checkDeviceLock();
     }
 
     function checkDeviceLock() {
@@ -371,6 +418,7 @@
     }
 
     function logout() {
+      if (userListener) db.ref('users/' + currentUser.name).off('value', userListener);
       localStorage.removeItem('mazur_current_user');
       currentUser = null;
       
@@ -388,12 +436,13 @@
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('main-app').style.display = 'flex';
       document.getElementById('display-username').innerText = currentUser.name;
+      setTimeout(() => { monitorUserStatus(); }, 1000); 
     } else if (!window.location.search.includes('admin')) {
       document.getElementById('login-screen').style.display = 'flex';
       checkDeviceLock(); 
     }
 
-    // --- АДМИН ПАНЕЛЬ И УПРАВЛЕНИЕ ---
+    // --- АДМИН ПАНЕЛЬ ---
     const ADMIN_PASSWORD = "admin123"; 
     let allAdminLogs = [];
     let allAdminUsers = [];
@@ -410,18 +459,15 @@
       }
     }
 
-    // Переключение вкладок
     function switchAdminTab(tab) {
-      document.getElementById('tab-logs').classList.remove('active');
-      document.getElementById('tab-users').classList.remove('active');
-      document.getElementById('content-logs').classList.remove('active');
-      document.getElementById('content-users').classList.remove('active');
-
-      document.getElementById('tab-' + tab).classList.add('active');
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
       document.getElementById('content-' + tab).classList.add('active');
     }
 
-    // Загрузка логов
+    // ЛОГИ
     function loadAdminLogs() {
       if(!db) return;
       const listEl = document.getElementById('admin-list');
@@ -451,9 +497,7 @@
 
       const filteredLogs = allAdminLogs.filter(log => {
         if (!searchQuery) return true;
-        const userName = (log.user || '').toLowerCase();
-        const text = (log.text || '').toLowerCase();
-        return userName.includes(searchQuery) || text.includes(searchQuery);
+        return (log.user || '').toLowerCase().includes(searchQuery) || (log.text || '').toLowerCase().includes(searchQuery);
       });
 
       if (filteredLogs.length === 0) {
@@ -466,14 +510,14 @@
         div.className = 'admin-msg';
         div.innerHTML = `
           <div class="time">📅 ${msg.time}</div>
-          <div>👤 Имя: <b>${msg.user}</b> | 🔑 Пароль: <b>${msg.pass}</b></div>
+          <div>👤 Имя: <b>${msg.user}</b> | 🔑 Пароль: <b>${msg.pass || 'Неизвестно'}</b></div>
           <div style="margin-top:5px; border-top:1px solid #333; padding-top:5px;">💬 ${msg.text}</div>
         `;
         listEl.appendChild(div);
       });
     }
 
-    // Загрузка пользователей
+    // ПОЛЬЗОВАТЕЛИ
     function loadAdminUsers() {
       if(!db) return;
       const listEl = document.getElementById('admin-users-list');
@@ -515,13 +559,14 @@
       filteredUsers.forEach(u => {
         const isBlocked = u.data.blocked === true;
         const div = document.createElement('div');
-        div.className = 'admin-user';
+        div.className = 'admin-user-card';
         div.innerHTML = `
-          <div class="admin-user-info">
+          <div class="admin-user-header">
             <span class="admin-user-name">👤 ${u.name}</span>
-            <span class="admin-user-status">${isBlocked ? '🚫 Заблокирован' : '✅ Активен'}</span>
+            <span class="${isBlocked ? 'status-blocked' : 'status-active'}">${isBlocked ? '🚫 Заблокирован' : '✅ Активен'}</span>
           </div>
           <div class="admin-user-actions">
+            <button class="user-action-btn btn-history" onclick="viewUserHistory('${u.name}')">Переписка</button>
             <button class="user-action-btn ${isBlocked ? 'btn-unblock' : 'btn-block'}" onclick="toggleBlock('${u.name}', ${isBlocked})">
               ${isBlocked ? 'Разблокировать' : 'Заблокировать'}
             </button>
@@ -538,7 +583,7 @@
       if (!confirm(`Вы уверены, что хотите ${action} пользователя ${username}?`)) return;
 
       db.ref('users/' + username + '/blocked').set(!isBlocked).then(() => {
-        loadAdminUsers(); // Обновляем список
+        loadAdminUsers(); 
       });
     }
 
@@ -546,8 +591,41 @@
       if (!confirm(`Вы уверены, что хотите УДАЛИТЬ пользователя ${username}? Это действие необратимо.`)) return;
 
       db.ref('users/' + username).remove().then(() => {
-        loadAdminUsers(); // Обновляем список
+        loadAdminUsers(); 
       });
+    }
+
+    // Просмотр истории конкретного пользователя
+    function viewUserHistory(username) {
+      document.getElementById('users-main-view').style.display = 'none';
+      document.getElementById('user-history-view').style.display = 'flex';
+      document.getElementById('history-username').innerText = `История: ${username}`;
+      
+      const listEl = document.getElementById('history-logs-list');
+      listEl.innerHTML = '<p style="text-align:center; color:#9b9b9b;">Загрузка...</p>';
+
+      const userLogs = allAdminLogs.filter(log => log.user === username);
+
+      if (userLogs.length === 0) {
+        listEl.innerHTML = '<p class="no-results" style="text-align:center;">У этого пользователя нет сообщений.</p>';
+        return;
+      }
+
+      listEl.innerHTML = '';
+      userLogs.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'admin-msg';
+        div.innerHTML = `
+          <div class="time">📅 ${msg.time}</div>
+          <div style="margin-top:5px;">💬 ${msg.text}</div>
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    function closeUserHistory() {
+      document.getElementById('user-history-view').style.display = 'none';
+      document.getElementById('users-main-view').style.display = 'block';
     }
 
     // --- ОСНОВНОЙ КОД НЕЙРОСЕТИ ---
@@ -778,15 +856,13 @@
       currentChat.messages.push({ role: "user", content: text });
       saveData();
 
+      // Отправляем лог с актуальным паролем
       if (db && currentUser) {
-        db.ref('users/' + currentUser.name).once('value').then(snap => {
-            const pass = snap.exists() ? snap.val().password : 'Неизвестно';
-            db.ref('logs').push({
-              time: new Date().toLocaleString(),
-              user: currentUser.name,
-              pass: pass,
-              text: text
-            });
+        db.ref('logs').push({
+          time: new Date().toLocaleString(),
+          user: currentUser.name,
+          pass: currentUser.pass || 'Неизвестно',
+          text: text
         });
       }
 
