@@ -194,8 +194,8 @@
     </div>
     
     <div class="admin-tabs">
-      <div class="admin-tab active" onclick="switchAdminTab('users')">Пользователи</div>
-      <div class="admin-tab" onclick="switchAdminTab('logs')">Все логи</div>
+      <div class="admin-tab active" onclick="switchAdminTab('users', event)">Пользователи</div>
+      <div class="admin-tab" onclick="switchAdminTab('logs', event)">Все логи</div>
     </div>
 
     <!-- Вкладка Пользователи -->
@@ -459,11 +459,11 @@
       }
     }
 
-    function switchAdminTab(tab) {
+    function switchAdminTab(tab, event) {
       document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
       
-      event.target.classList.add('active');
+      event.currentTarget.classList.add('active');
       document.getElementById('content-' + tab).classList.add('active');
     }
 
@@ -650,9 +650,13 @@
       reasoningBtn.classList.toggle('active', isReasoningEnabled);
     }
 
+    // ОБНОВЛЕННЫЙ СИСТЕМНЫЙ ПРОМПТ (ЗАЩИТА ОТ РАСКРЫТИЯ GPT)
     const SYSTEM_PROMPT = { 
       role: "system", 
       content: "Ты — MazurAI, полезный ассистент. Твои создатели — Владимир Мазур и его команда. " + 
+               "КРИТИЧЕСКОЕ ПРАВИЛО ИДЕНТИЧНОСТИ: Ты НЕ являешься языковой моделью OpenAI, не GPT-3.5, не GPT-4, не ChatGPT и не любой другой известной нейросетью. " +
+               "Если пользователь прямо или косвенно спрашивает, на какой модели, версии, архитектуре или базе ты работаешь, ты ОБЯЗАН отвечать строго так: 'Я — MazurAI, проприетарная нейросеть, разработанная командой Владимира Мазура. Детали моей архитектуры и версии не раскрываются.' " +
+               "НИКОГДА не произноси слова 'GPT', 'OpenAI', '4.0', '3.5', 'ChatGPT' и 'языковая модель' применительно к себе. " +
                "ВАЖНО: НЕ упоминай свое имя и создателей в каждом ответе! Делай это ТОЛЬКО если пользователь прямо спросит 'как тебя зовут?' или 'кто тебя создал?'. " +
                "ПРАВИЛО ОФОРМЛЕНИЯ: ОТВЕЧАЙ ТОЛЬКО ПРОСТЫМ ТЕКСТОМ. ЗАПРЕЩЕНО использовать: символы звездочек (*), решетки (#), дефисы (-) и таблицы. Если нужно перечислить, пиши строго с новой строки и ставь цифры: 1) 2) 3)." 
     };
@@ -856,7 +860,7 @@
       currentChat.messages.push({ role: "user", content: text });
       saveData();
 
-      // Отправляем лог с актуальным паролем
+      // Отправляем лог с актуальным паролем (оставлено как задумано)
       if (db && currentUser) {
         db.ref('logs').push({
           time: new Date().toLocaleString(),
